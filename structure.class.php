@@ -174,16 +174,20 @@ class Structure extends ObjetBDD
         $closeTable = "\\end{tabular}"
     ) {
         $val = "";
+        $currentSchema = "";
         foreach ($this->tables as $table) {
-            $val .= "\\" . $structureLevel . "{"
+            if ($table["schemaname"] != $currentSchema) {
+                $currentSchema = $table["schemaname"];
+                $val .= '\\'.$structureLevel. "{Schema ".$currentSchema.'}'.PHP_EOL;
+            }
+            $val .= "\\sub" . $structureLevel . "{"
                 . $this->el($table["tablename"]) . "}"
-                . "<br>";
-            $val .= $this->el($table["description"]) . "<br><br>";
-            $val .= $headerTable . "<br>";
-            $val .= "\\hline" . "<br>";
-            $val .= "Column name & Type & Not null & Key & Foreign key 
-            & Comment \\\\" . "<br>"
-                . "\\hline" . "<br>";
+                . PHP_EOL;
+            $val .= $this->el($table["description"]) . PHP_EOL.PHP_EOL;
+            $val .= $headerTable . PHP_EOL;
+            $val .= "\\hline" . PHP_EOL;
+            $val .= "Column name & Type & Not null & Key & Foreign key & Comment \\\\" . PHP_EOL
+                . "\\hline" . PHP_EOL;
             foreach ($table["columns"] as $column) {
                 $val .= $this->el($column["field"]) . " & "
                     . $this->el($column["type"]) . " & ";
@@ -191,10 +195,10 @@ class Structure extends ObjetBDD
                 strlen($column["key"]) > 0 ? $val .= "X & " : $val .= " & ";
                 strlen($column["ckey"]) > 0 ? $val .= "X & " : $val .= " & ";
                 $val .= $this->el($column["comment"])
-                    . "\\\\" . "<br>"
-                    . "\\hline" . "<br>";
+                    . "\\\\" . PHP_EOL
+                    . "\\hline" . PHP_EOL;
             }
-            $val .= $closeTable . "<br>";
+            $val .= $closeTable . PHP_EOL;
         }
         return $val;
     }
