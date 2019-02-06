@@ -1,0 +1,5 @@
+[database]
+dsn="pgsql:host=localhost;dbname=mydb"
+login="mylogin"
+passwd="mypassword"
+schema="public"
