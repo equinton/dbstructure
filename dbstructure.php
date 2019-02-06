@@ -73,11 +73,23 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
             <head>
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <title>'.$dbname.'</title>
-            <link rel="stylesheet" type="text/css" href="dbstructure.css" 
+            <link rel="stylesheet" type="text/css" href="dbstructure.css" >
+            <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+            <script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+            <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
             </head>
             <body>
+            <script>
+            $(document).ready( function () {
+                $(".datatable").DataTable(
+                    "paging": false;
+                    "searching": false;
+                );
+            } );
+            </script>
+            <h1>Structure de la base de données '.$dbname.'</h1>
             ';
-                $data = $structure->generateHtml();
+                $data = $structure->generateHtml("tablename", "tablecomment", "datatable row-border display");
                 $bottom = '</body></html>';
                 $content = $header . $data . $bottom;
             } else {
