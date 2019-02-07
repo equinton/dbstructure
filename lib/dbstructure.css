@@ -3,6 +3,8 @@
 	background: #003A80;
 	font-size: large;
     color: white;
+    font-weight:bold;
+    margin-top: 1em;
 }
 .tablecomment {
 	color:#009EE0;
@@ -13,6 +15,10 @@ h1 {
 h2 {
     color: #009EE0;
     padding-top: 1em;
+}
+h3 {
+    color: #003A80;
+    font-weight:normal;
 }
 .datatable {
     padding-bottom: 1em;
