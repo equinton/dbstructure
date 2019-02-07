@@ -230,7 +230,6 @@ class Structure extends ObjetBDD
                     . $this->el($column["type"]) . " & ";
                 ($column["notnull"] == 1) ? $val .= "X & " : $val .= " & ";
                 strlen($column["key"]) > 0 ? $val .= "X & " : $val .= " & ";
-                strlen($column["ckey"]) > 0 ? $val .= "X & " : $val .= " & ";
                 $val .= $this->el($column["comment"])
                     . "\\\\" . PHP_EOL
                     . "\\hline" . PHP_EOL;
@@ -242,7 +241,7 @@ class Structure extends ObjetBDD
              */
             $refs = $this->getReferences($table["schemaname"], $table["tablename"]);
             if (count($refs) > 0) {
-                $val .= "\\paragraphe{References}" . PHP_EOL;
+                $val .= "\\paragraph{References}" . PHP_EOL;
                 foreach ($refs as $ref) {
                     $val .= $this->el($ref["column_name"]) . ": " . $this->el($ref["foreign_schema_name"]) . "."
                         . $this->el($ref["foreign_table_name"])
@@ -251,7 +250,7 @@ class Structure extends ObjetBDD
             }
             $refs = $this->getReferencedBy($table["schemaname"], $table["tablename"]);
             if (count($refs) > 0) {
-                $val .= "\\paragraphe{Referenced by}" . PHP_EOL;
+                $val .= "\\paragraph{Referenced by}" . PHP_EOL;
                 foreach ($refs as $ref) {
                     $val .= $this->el($ref["foreign_column_name"]) . ": " . $this->el($ref["schema_name"]) . "."
                         . $this->el($ref["table_name"])
