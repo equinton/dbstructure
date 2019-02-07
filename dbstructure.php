@@ -108,8 +108,10 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
                 });
             } );
             </script>
-            <h1>Database ' . $dbname . ' structure</h1>
-            ';
+            <h1>Structure of ' . $dbname . ' database</h1>';
+            if ($dbparam["html"]["showdate"]==1) {
+                $header .= '<p>Date generation: '.date($dbparam["html"]["dateformat"]).'</p>';
+            }
                 $data = $structure->generateHtml("tablename", "tablecomment", "datatable row-border display");
                 $bottom = '</body></html>';
                 $content = $header . $data . $bottom;
@@ -117,11 +119,7 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
                 /**
                  * Latex formatting
                  */
-                $content = $structure->generateLatex(
-                    "subsection",
-                    "\\begin{tabular}{|l| p{2cm}|c|c| p{5cm}|}",
-                    "\\end{tabular}"
-                );
+                $content = $structure->generateLatex($dbparam["latex"]["level"], $dbparam["latex"]["tableheader"], $dbparam["latex"]["tablefooter"]);
 
             }
             $handle = fopen($fileExport, "w");

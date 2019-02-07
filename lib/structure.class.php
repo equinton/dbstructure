@@ -116,7 +116,7 @@ class Structure extends ObjetBDD
        ';
         $this->_colonnes = $this->getListeParam($sql);
     }
-    
+
     /**
      * Format structure in html
      *
@@ -137,7 +137,7 @@ class Structure extends ObjetBDD
                 $currentSchema = $table["schemaname"];
                 $val .= '<h2>Schema ' . $currentSchema . '</h2>';
             }
-            $val .= '<div id="'.$table["schemaname"].$table["tablename"] .'" class="' . $classTableName . '">' . $table["tablename"] . "</div>"
+            $val .= '<div id="' . $table["schemaname"] . $table["tablename"] . '" class="' . $classTableName . '">' . $table["tablename"] . "</div>"
                 . '<br><div class="' . $classTableComment . '">'
                 . $table["description"] . '</div>.<br>';
             $val .= '<table class="' . $classTableColumns . '">';
@@ -153,8 +153,16 @@ class Structure extends ObjetBDD
                 $val .= '<tr>
                 <td>' . $column["field"] . '</td>
                 <td>' . $column["type"] . '</td>
-                <td>' . $column["notnull"] . '</td>
-                <td>' . $column["key"] . '</td>
+                <td class="center">';
+                if  ($column["notnull"] == 1) {
+                    $val .= "X";
+                }
+                $val .= '</td>
+                <td class="center">';
+                if (strlen($column["key"]) > 0) {
+                    $val .= "X";
+                }
+                $val .= '</td>
                 <td>' . $column["comment"] . '</td>
                 </tr>';
             }
@@ -164,25 +172,25 @@ class Structure extends ObjetBDD
              */
             $refs = $this->getReferences($table["schemaname"], $table["tablename"]);
             if (count($refs) > 0) {
-               $val .= "<h3>References</h3>";
-               foreach ($refs as $ref) {
-                   $val .= $ref["column_name"]. ": ".$ref["foreign_schema_name"]
-                   .'.<a href="#'.$ref["foreign_schema_name"].$ref["foreign_table_name"].'">'
-                   .$ref["foreign_table_name"]
-                   ."</a>"
-                   ." (".$ref["foreign_column_name"].")<br>";
-               }
+                $val .= "<h3>References</h3>";
+                foreach ($refs as $ref) {
+                    $val .= $ref["column_name"] . ": " . $ref["foreign_schema_name"]
+                        . '.<a href="#' . $ref["foreign_schema_name"] . $ref["foreign_table_name"] . '">'
+                        . $ref["foreign_table_name"]
+                        . "</a>"
+                        . " (" . $ref["foreign_column_name"] . ")<br>";
+                }
             }
             $refs = $this->getReferencedBy($table["schemaname"], $table["tablename"]);
             if (count($refs) > 0) {
-               $val .= "<h3>Referenced by</h3>";
-               foreach ($refs as $ref) {
-                   $val .= $ref["foreign_column_name"]. ": ".$ref["schema_name"]
-                   .'.<a href="#'.$ref["schema_name"].$ref["table_name"].'">'
-                   .$ref["table_name"]
-                   ."</a>"
-                   ." (".$ref["column_name"].")<br>";
-               }
+                $val .= "<h3>Referenced by</h3>";
+                foreach ($refs as $ref) {
+                    $val .= $ref["foreign_column_name"] . ": " . $ref["schema_name"]
+                        . '.<a href="#' . $ref["schema_name"] . $ref["table_name"] . '">'
+                        . $ref["table_name"]
+                        . "</a>"
+                        . " (" . $ref["column_name"] . ")<br>";
+                }
             }
         }
 
@@ -229,26 +237,26 @@ class Structure extends ObjetBDD
             }
             $val .= $closeTable . PHP_EOL;
 
-             /**
+            /**
              * Add references
              */
             $refs = $this->getReferences($table["schemaname"], $table["tablename"]);
             if (count($refs) > 0) {
-               $val .= "\\paragraphe{References}".PHP_EOL;
-               foreach ($refs as $ref) {
-                   $val .= $this->el($ref["column_name"]). ": ".$this->el($ref["foreign_schema_name"])."."
-                   .$this->el($ref["foreign_table_name"])
-                   ." (".$this->el($ref["foreign_column_name"]).")".PHP_EOL.PHP_EOL;
-               }
+                $val .= "\\paragraphe{References}" . PHP_EOL;
+                foreach ($refs as $ref) {
+                    $val .= $this->el($ref["column_name"]) . ": " . $this->el($ref["foreign_schema_name"]) . "."
+                        . $this->el($ref["foreign_table_name"])
+                        . " (" . $this->el($ref["foreign_column_name"]) . ")" . PHP_EOL . PHP_EOL;
+                }
             }
             $refs = $this->getReferencedBy($table["schemaname"], $table["tablename"]);
             if (count($refs) > 0) {
-               $val .= "\\paragraphe{Referenced by}".PHP_EOL;
-               foreach ($refs as $ref) {
-                   $val .= $this->el($ref["foreign_column_name"]). ": ".$this->el($ref["schema_name"])."."
-                   .$this->el($ref["table_name"])
-                   ." (".$this->el($ref["column_name"]).")".PHP_EOL.PHP_EOL;
-               }
+                $val .= "\\paragraphe{Referenced by}" . PHP_EOL;
+                foreach ($refs as $ref) {
+                    $val .= $this->el($ref["foreign_column_name"]) . ": " . $this->el($ref["schema_name"]) . "."
+                        . $this->el($ref["table_name"])
+                        . " (" . $this->el($ref["column_name"]) . ")" . PHP_EOL . PHP_EOL;
+                }
             }
         }
         return $val;

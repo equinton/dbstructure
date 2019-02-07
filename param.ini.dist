@@ -3,3 +3,14 @@ dsn="pgsql:host=localhost;dbname=mydb"
 login="mylogin"
 passwd="mypassword"
 schema="public,otherschema"
+
+[latex]
+level="subsection"
+tableheader="\\begin{tabular}{|l| p{2cm}|c|c| p{5cm}|}"
+tablefooter="\\end{tabular}"
+
+[html]
+showdate=1
+dateformat=DATE_RFC2822
+#French format :
+#dateformat="d/m/Y H:m:i"
