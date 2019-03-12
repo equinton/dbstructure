@@ -70,9 +70,7 @@ class Structure extends ObjetBDD
         left outer join pg_catalog.pg_description on (relid = objoid and objsubid = 0)
         where schemaname in (" . $this->_schema . ")
         order by schemaname, relname";
-        echo $sql;
         $this->_tables = $this->getListeParam($sql);
-        print_r($this->_tables);
     }
 
     /**
