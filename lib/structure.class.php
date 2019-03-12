@@ -67,10 +67,12 @@ class Structure extends ObjetBDD
     {
         $sql = "select schemaname, relname as tablename, description
         from pg_catalog.pg_statio_all_tables st
-        join pg_catalog.pg_description on (relid = objoid and objsubid = 0)
+        left outer join pg_catalog.pg_description on (relid = objoid and objsubid = 0)
         where schemaname in (" . $this->_schema . ")
         order by schemaname, relname";
+        echo $sql;
         $this->_tables = $this->getListeParam($sql);
+        print_r($this->_tables);
     }
 
     /**
@@ -327,7 +329,7 @@ class Structure extends ObjetBDD
             $schemaType = 'y';
         }
         $sql = "
-        select c.constraint_name
+        select distinct c.constraint_name
           , x.table_schema as schema_name
            , x.table_name
             , x.column_name
