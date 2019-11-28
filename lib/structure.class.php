@@ -17,11 +17,11 @@ class Structure extends ObjetBDD
 
     /**
      * __construct
-     *  
-     * @param PDO   $p_connection 
-     * @param mixed $param 
-     * 
-     * @return void 
+     *
+     * @param PDO   $p_connection
+     * @param mixed $param
+     *
+     * @return void
      */
     function __construct(\PDO $p_connection, array $param = array())
     {
@@ -42,11 +42,11 @@ class Structure extends ObjetBDD
         $this->getTables();
         $this->getColumns();
 
-         /*
+        /*
          * Mise en forme du tableau utilisable
          */
         foreach ($this->_tables as $table) {
-            /* 
+            /*
              * Recherche des colonnes attachees
              */
             foreach ($this->_colonnes as $colonne) {
@@ -60,8 +60,8 @@ class Structure extends ObjetBDD
 
     /**
      * Get tables list
-     * 
-     * @return void 
+     *
+     * @return void
      */
     function getTables()
     {
@@ -75,13 +75,13 @@ class Structure extends ObjetBDD
 
     /**
      * Get columns list
-     * 
-     * @return void 
+     *
+     * @return void
      */
     function getColumns()
     {
-        $sql = 'with req as 
-        (SELECT DISTINCT on (schemaname, tablename, field) schemaname, pg_tables.tablename, 
+        $sql = 'with req as
+        (SELECT DISTINCT on (schemaname, tablename, field) schemaname, pg_tables.tablename,
            attnum,  pg_attribute.attname AS field,
             format_type(pg_attribute.atttypid,NULL) AS "type",
          (SELECT col_description(pg_attribute.attrelid,pg_attribute.attnum)) AS COMMENT,
@@ -137,7 +137,7 @@ class Structure extends ObjetBDD
                 $currentSchema = $table["schemaname"];
                 $val .= '<h2>Schema ' . $currentSchema . '</h2>';
             }
-            $val .= '<div id="' . $table["schemaname"] . $table["tablename"] . '" class="' . $classTableName . '">' . $table["tablename"] . "</div>"
+            $val .= '<div id="' . $table["schemaname"] . $table["tablename"] . '" class="' . $classTableName . '">' . $table["schemaname"] . "." . $table["tablename"] . "</div>"
                 . '<br><div class="' . $classTableComment . '">'
                 . $table["description"] . '</div>.<br>';
             $val .= '<table class="' . $classTableColumns . '">';
@@ -154,7 +154,7 @@ class Structure extends ObjetBDD
                 <td>' . $column["field"] . '</td>
                 <td>' . $column["type"] . '</td>
                 <td class="center">';
-                if  ($column["notnull"] == 1) {
+                if ($column["notnull"] == 1) {
                     $val .= "X";
                 }
                 $val .= '</td>
@@ -264,8 +264,8 @@ class Structure extends ObjetBDD
     /**
      * escape  _ by \_ for latex
      * @param string $chaine
-     *  
-     * @return string 
+     *
+     * @return string
      */
     function el($chaine)
     {
@@ -341,12 +341,8 @@ class Structure extends ObjetBDD
            on y.ordinal_position = x.position_in_unique_constraint
             and y.constraint_name = c.unique_constraint_name
         where " . $type . ".table_schema = :schema and " . $type . ".table_name = :table
-            and " . $schemaType . ".table_schema in (" . $this->_schema . ")
         order by y.table_schema, y.table_name
         ";
         return ($this->getListeParamAsPrepared($sql, array("schema" => $schema, "table" => $table)));
     }
 }
-
-
-?>
