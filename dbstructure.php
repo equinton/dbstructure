@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Software used to retrieve the structure of a Postgresql database 
+ * Software used to retrieve the structure of a Postgresql database
  * Copyright © 2019, Eric Quinton
  * Distributed under license MIT (https://mit-license.org/)
- * 
- * Usage: 
+ *
+ * Usage:
  * rename param.ini.dist in param.ini
- * change params in param.ini to specify the parameters to connect the database, 
+ * change params in param.ini to specify the parameters to connect the database,
  * and specify the list of schemas to analyze, separated by a comma
  */
 
@@ -30,7 +30,8 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
     $message->set("-h ou --help: this help file");
     $message->set("--export=filename: name of export file (default: dbstructure-YYYYMMDDHHmm.html");
     $message->set("--format=tex|html|csv: export format (html by default)");
-    $message->set("--summary=y: display a list of all tables a the top of the file");
+    $message->set("--summary=y: display a list of all tables at the top of the html file");
+    $message->set("--csvtype=columns|tables: extract the list of columns or the list of tables (in conjunction with csv export)");
     $message->set("Change params in param.ini to specify the parameters to connect the database, and specify the list of schemas to analyze, separated by a comma");
 } else {
 
@@ -41,8 +42,9 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
     $formatExport = "html";
     $fileExport = "";
     $summary = "y";
+    $csvtype = "columns";
     $schemas = $dbparam[$sectionName]["schema"];
-    /** 
+    /**
      * Database connection
      */
     try {
@@ -60,15 +62,16 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
         for ($i = 1; $i <= count($argv); $i++) {
             $arg = explode("=", $argv[$i]);
             if (strlen($arg[1]) > 0) {
-                switch ($arg[0]) {
-                    case "--export":
+                $a = substr($arg[0],2);
+                switch ($a) {
+                    case "export":
                         $fileExport = $arg[1];
                         break;
-                    case "--format":
+                    case "format":
                         $formatExport = $arg[1];
                         break;
                     default:
-                        $$arg[0] = $arg[1];
+                        $$a = $arg[1];
                         break;
                 }
             }
@@ -122,7 +125,7 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
                 if ($dbparam["html"]["showdate"] == 1) {
                     $header .= '<p>Date generation: ' . date($dbparam["html"]["dateformat"]) . '</p>';
                 }
-                if (strtolower($summary) == "y" ) {
+                if (strtolower($summary) == "y") {
                     $header .= $structure->generateSummaryHtml();
                 }
                 $data = $structure->generateHtml("tablename", "tablecomment", "datatable row-border display");
@@ -137,12 +140,16 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
                 /**
                  * Export CSV
                  */
-                $data = $structure->getAllColumns();
+                if ($csvtype == "columns") {
+                    $data = $structure->getAllColumns();
+                } else {
+                    $data = $structure->getAllTables();
+                }
                 /**
                  * Generate the header
                  */
                 $csvheader = array();
-                foreach ($data[0] as $key=>$value) {
+                foreach ($data[0] as $key => $value) {
                     $csvheader[] = $key;
                 }
                 fputcsv($handle, $csvheader);

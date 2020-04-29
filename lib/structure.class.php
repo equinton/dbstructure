@@ -127,7 +127,7 @@ class Structure extends ObjetBDD
         foreach ($this->tables as $table) {
             if ($table["schemaname"] != $currentSchema) {
                 $currentSchema = $table["schemaname"];
-                $val .= '<h2><div id="'.$table["schemaname"].'">Schema ' . $currentSchema . '</div></h2>';
+                $val .= '<h2><div id="' . $table["schemaname"] . '">Schema ' . $currentSchema . '</div></h2>';
             }
             $val .= '<div id="' . $table["schemaname"] . $table["tablename"] . '" class="' . $classTableName . '">' . $table["schemaname"] . "." . $table["tablename"] . "</div>"
                 . '<br><div class="' . $classTableComment . '">'
@@ -365,8 +365,8 @@ class Structure extends ObjetBDD
                 }
                 $currentSchema = $table["schemaname"];
                 $summary .= '<li><a href="#'
-                . $table["schemaname"]
-                . '">' .$currentSchema."</a><ul>";
+                    . $table["schemaname"]
+                    . '">' . $currentSchema . "</a><ul>";
             }
             $summary .= '<li><a href="#'
                 . $table["schemaname"] . $table["tablename"]
@@ -375,7 +375,23 @@ class Structure extends ObjetBDD
         $summary .= "</ul></li></ul>";
         return ($summary);
     }
-    function getAllColumns() {
+    /**
+     * Get the list of all columns
+     *
+     * @return array
+     */
+    function getAllColumns()
+    {
         return $this->_colonnes;
+    }
+
+    /**
+     * Get the list of all tables 
+     *
+     * @return array
+     */
+    function getAllTables()
+    {
+        return $this->_tables;
     }
 }
