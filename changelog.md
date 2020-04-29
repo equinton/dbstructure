@@ -9,6 +9,7 @@ News features:
 - adding the commment of the database
 - adding a summary in html format
 - adding a csv export (tables or columns)
+- the type of columns is completed with the length or the characteristics of the datatype
 
 ## Version 1.0.1 - 2019-11-28
 
