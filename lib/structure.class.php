@@ -91,7 +91,10 @@ class Structure extends ObjetBDD
          pg_constraint.conname AS "key",
          pc2.conname AS ckey
         FROM pg_tables
-       JOIN pg_class on (pg_class.relname = pg_tables.tablename)
+        JOIN pg_namespace ON (pg_namespace.nspname = pg_tables.schemaname)
+        JOIN pg_class
+         ON (pg_class.relname = pg_tables.tablename
+         AND pg_class.relnamespace = pg_namespace.oid)
        JOIN pg_attribute
        ON pg_class.oid = pg_attribute.attrelid
        AND pg_attribute.attnum > 0
