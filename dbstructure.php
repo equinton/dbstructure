@@ -25,11 +25,12 @@ $message = new Message();
 
 if ($argv[1] == "-h" || $argv[1] == "--help") {
     $message->set("DbStructure : display the structure of a Postgresql database");
-    $message->set("Licence : MIT. Copyright © 2019 - Éric Quinton");
+    $message->set("Licence : MIT. Copyright © 2019-2020 - Eric Quinton");
     $message->set("Options :");
-    $message->set("-h ou --help : ce message d'aide");
-    $message->set("--export=filename : name of export file (default: dbstructure-YYYYMMDDHHmm.html");
-    $message->set("--format=tex|html : export format (html by default)");
+    $message->set("-h ou --help: this help file");
+    $message->set("--export=filename: name of export file (default: dbstructure-YYYYMMDDHHmm.html");
+    $message->set("--format=tex|html: export format (html by default)");
+    $message->set("--summary=y: display a list of all tables a the top of the file");
     $message->set("Change params in param.ini to specify the parameters to connect the database, and specify the list of schemas to analyze, separated by a comma");
 } else {
 
@@ -39,6 +40,7 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
     $isConnected = false;
     $formatExport = "html";
     $fileExport = "";
+    $summary = "y";
     $schemas = $dbparam[$sectionName]["schema"];
     /** 
      * Database connection
@@ -65,6 +67,9 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
                     case "--format":
                         $formatExport = $arg[1];
                         break;
+                    default:
+                        $$arg[0] = $arg[1];
+                        break;
                 }
             }
         }
@@ -76,6 +81,7 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
          */
         try {
             $dbname = $structure->getDatabaseName();
+            $dbnamecomment = $structure->getDatabaseComment();
             $structure->extractData($schemas);
             /**
              * HTML formatting
@@ -109,9 +115,15 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
             } );
             </script>
             <h1>Structure of ' . $dbname . ' database</h1>';
-            if ($dbparam["html"]["showdate"]==1) {
-                $header .= '<p>Date generation: '.date($dbparam["html"]["dateformat"]).'</p>';
-            }
+                if (strlen($dbnamecomment) > 0) {
+                    $header .= "<p class='tablecomment'>$dbnamecomment</p>";
+                }
+                if ($dbparam["html"]["showdate"] == 1) {
+                    $header .= '<p>Date generation: ' . date($dbparam["html"]["dateformat"]) . '</p>';
+                }
+                if (strtolower($summary) == "y" ) {
+                    $header .= $structure->generateSummaryHtml();
+                }
                 $data = $structure->generateHtml("tablename", "tablecomment", "datatable row-border display");
                 $bottom = '</body></html>';
                 $content = $header . $data . $bottom;
@@ -120,7 +132,6 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
                  * Latex formatting
                  */
                 $content = $structure->generateLatex($dbparam["latex"]["level"], $dbparam["latex"]["tableheader"], $dbparam["latex"]["tablefooter"]);
-
             }
             $handle = fopen($fileExport, "w");
             fwrite($handle, $content);
@@ -130,7 +141,6 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
             $message->set($e->getMessage());
             $message->set("The file can't be generated.");
         }
-
     }
 }
 /**
@@ -140,6 +150,3 @@ foreach ($message->get() as $line) {
     echo ($line . PHP_EOL);
 }
 echo (PHP_EOL);
-
-
-?>

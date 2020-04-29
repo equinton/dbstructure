@@ -80,23 +80,18 @@ class Structure extends ObjetBDD
      */
     function getColumns()
     {
-        $sql = 'with req as
-        (SELECT DISTINCT on (schemaname, tablename, field) schemaname, pg_tables.tablename,
+        $sql = 'SELECT DISTINCT on (schemaname, tablename, field) schemaname, pg_tables.tablename,
            attnum,  pg_attribute.attname AS field,
-            format_type(pg_attribute.atttypid,NULL) AS "type",
-         (SELECT col_description(pg_attribute.attrelid,pg_attribute.attnum)) AS COMMENT,
+           pg_catalog.format_type(pg_attribute.atttypid,pg_attribute.atttypmod) AS "type",
+         (SELECT col_description(pg_attribute.attrelid,pg_attribute.attnum)) AS comment,
          CASE pg_attribute.attnotnull
             WHEN FALSE THEN 0
            ELSE 1
          END AS "notnull",
          pg_constraint.conname AS "key",
-         pc2.conname AS ckey,
-         (SELECT pg_attrdef.adsrc
-          FROM pg_attrdef
-          WHERE pg_attrdef.adrelid = pg_class.oid
-          AND   pg_attrdef.adnum = pg_attribute.attnum) AS def
-        FROM pg_tables,
-       pg_class
+         pc2.conname AS ckey
+        FROM pg_tables
+       JOIN pg_class on (pg_class.relname = pg_tables.tablename)
        JOIN pg_attribute
        ON pg_class.oid = pg_attribute.attrelid
        AND pg_attribute.attnum > 0
@@ -108,12 +103,9 @@ class Structure extends ObjetBDD
            ON pc2.contype = \'f\'::"char"
            AND pc2.conrelid = pg_class.oid
            AND (pg_attribute.attnum = ANY (pc2.conkey))
-        WHERE pg_class.relname = pg_tables.tablename
-        AND   pg_attribute.atttypid <> 0::OID
+        WHERE pg_attribute.atttypid <> 0::OID
         and schemaname in ( ' . $this->_schema . ')
-       ORDER BY schemaname, tablename, field ASC)
-        select * from req order by tablename, attnum;
-       ';
+       ORDER BY schemaname, tablename, field ASC';
         $this->_colonnes = $this->getListeParam($sql);
     }
 
@@ -135,7 +127,7 @@ class Structure extends ObjetBDD
         foreach ($this->tables as $table) {
             if ($table["schemaname"] != $currentSchema) {
                 $currentSchema = $table["schemaname"];
-                $val .= '<h2>Schema ' . $currentSchema . '</h2>';
+                $val .= '<h2><div id="'.$table["schemaname"].'">Schema ' . $currentSchema . '</div></h2>';
             }
             $val .= '<div id="' . $table["schemaname"] . $table["tablename"] . '" class="' . $classTableName . '">' . $table["schemaname"] . "." . $table["tablename"] . "</div>"
                 . '<br><div class="' . $classTableComment . '">'
@@ -285,6 +277,18 @@ class Structure extends ObjetBDD
     }
 
     /**
+     * Get the description of the database
+     *
+     * @return string
+     */
+    function getDatabaseComment()
+    {
+        $sql = "select shobj_description((select oid from pg_catalog.pg_database where datname = current_database()), 'pg_database') as comment";
+        $data = $this->lireParam($sql);
+        return ($data["comment"]);
+    }
+
+    /**
      * Get references for a table
      *
      * @param string $schema
@@ -344,5 +348,31 @@ class Structure extends ObjetBDD
         order by y.table_schema, y.table_name
         ";
         return ($this->getListeParamAsPrepared($sql, array("schema" => $schema, "table" => $table)));
+    }
+    /**
+     * Generate the list of tables for html summary
+     *
+     * @return string
+     */
+    function generateSummaryHtml()
+    {
+        $currentSchema = "";
+        $summary = "<ul>";
+        foreach ($this->tables as $table) {
+            if ($table["schemaname"] != $currentSchema) {
+                if (strlen($currentSchema) > 0) {
+                    $summary .= "</ul></li>";
+                }
+                $currentSchema = $table["schemaname"];
+                $summary .= '<li><a href="#'
+                . $table["schemaname"]
+                . '">' .$currentSchema."</a><ul>";
+            }
+            $summary .= '<li><a href="#'
+                . $table["schemaname"] . $table["tablename"]
+                . '">' . $table["tablename"] . "</a></li>";
+        }
+        $summary .= "</ul></li></ul>";
+        return ($summary);
     }
 }

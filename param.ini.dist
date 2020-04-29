@@ -13,4 +13,4 @@ tablefooter="\\end{tabular}"
 showdate=1
 dateformat=DATE_RFC2822
 #French format :
-#dateformat="d/m/Y H:m:i"
+#dateformat="d/m/Y H:i:s"
