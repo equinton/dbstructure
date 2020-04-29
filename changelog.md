@@ -1,5 +1,15 @@
 # list of change
 
+## Version 1.1.0 - 2020-04-29
+Bug fixes:
+- the script not run with Postgresql 12
+- the default file name was uncorrectly formatted (wrong time)
+
+News features:
+- adding the commment of the database
+- adding a summary in html format
+- adding a csv export (tables or columns)
+
 ## Version 1.0.1 - 2019-11-28
 
 Bugs fixes:

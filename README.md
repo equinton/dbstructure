@@ -11,10 +11,14 @@ PHP script to generate the description of a Postgresql database
 
 ```php dbstructure.php```
 
-__Options:__ 
+__Options:__
 
 --help  display a help message
 
---export=filename set the name of the generated file (default: dbstructure-YYYYMMDDHHmm.html)
+--export=filename: name of export file (default: dbstructure-YYYYMMDDHHmm.html
 
---format=tex generate a file in latex format (default: html)
+--format=tex|html|csv: export format (html by default)
+
+--summary=y: display a list of all tables at the top of the html file
+
+--csvtype=columns|tables: extract the list of columns or the list of tables (in conjunction with csv export)
