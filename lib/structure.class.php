@@ -80,7 +80,7 @@ class Structure extends ObjetBDD
      */
     function getColumns()
     {
-        $sql = 'SELECT DISTINCT on (schemaname, tablename, field) schemaname, pg_tables.tablename,
+        $sql = 'SELECT DISTINCT on (schemaname, tablename, attnum) schemaname, pg_tables.tablename,
            attnum,  pg_attribute.attname AS field,
            pg_catalog.format_type(pg_attribute.atttypid,pg_attribute.atttypmod) AS "type",
          (SELECT col_description(pg_attribute.attrelid,pg_attribute.attnum)) AS comment,
@@ -105,7 +105,7 @@ class Structure extends ObjetBDD
            AND (pg_attribute.attnum = ANY (pc2.conkey))
         WHERE pg_attribute.atttypid <> 0::OID
         and schemaname in ( ' . $this->_schema . ')
-       ORDER BY schemaname, tablename, field ASC';
+       ORDER BY schemaname, tablename, attnum ASC';
         $this->_colonnes = $this->getListeParam($sql);
     }
 
@@ -374,5 +374,8 @@ class Structure extends ObjetBDD
         }
         $summary .= "</ul></li></ul>";
         return ($summary);
+    }
+    function getAllColumns() {
+        return $this->_colonnes;
     }
 }

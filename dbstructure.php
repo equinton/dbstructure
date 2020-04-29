@@ -29,7 +29,7 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
     $message->set("Options :");
     $message->set("-h ou --help: this help file");
     $message->set("--export=filename: name of export file (default: dbstructure-YYYYMMDDHHmm.html");
-    $message->set("--format=tex|html: export format (html by default)");
+    $message->set("--format=tex|html|csv: export format (html by default)");
     $message->set("--summary=y: display a list of all tables a the top of the file");
     $message->set("Change params in param.ini to specify the parameters to connect the database, and specify the list of schemas to analyze, separated by a comma");
 } else {
@@ -80,6 +80,7 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
          * Generation of code
          */
         try {
+            $handle = fopen($fileExport, "w");
             $dbname = $structure->getDatabaseName();
             $dbnamecomment = $structure->getDatabaseComment();
             $structure->extractData($schemas);
@@ -127,14 +128,34 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
                 $data = $structure->generateHtml("tablename", "tablecomment", "datatable row-border display");
                 $bottom = '</body></html>';
                 $content = $header . $data . $bottom;
-            } else {
+            } else if ($formatExport == "tex") {
                 /**
                  * Latex formatting
                  */
                 $content = $structure->generateLatex($dbparam["latex"]["level"], $dbparam["latex"]["tableheader"], $dbparam["latex"]["tablefooter"]);
+            } else {
+                /**
+                 * Export CSV
+                 */
+                $data = $structure->getAllColumns();
+                /**
+                 * Generate the header
+                 */
+                $csvheader = array();
+                foreach ($data[0] as $key=>$value) {
+                    $csvheader[] = $key;
+                }
+                fputcsv($handle, $csvheader);
+                /**
+                 * Populate the file
+                 */
+                foreach ($data as $value) {
+                    fputcsv($handle, $value);
+                }
             }
-            $handle = fopen($fileExport, "w");
-            fwrite($handle, $content);
+            if ($formatExport != "csv") {
+                fwrite($handle, $content);
+            }
             fclose($handle);
             $message->set("File " . $fileExport . " generate");
         } catch (Exception $e) {
