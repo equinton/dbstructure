@@ -84,6 +84,9 @@ if ($argv[1] == "-h" || $argv[1] == "--help") {
          */
         try {
             $handle = fopen($fileExport, "w");
+            if ($formatExport != "html") {
+                $structure->codageHtml = false;
+            }
             $dbname = $structure->getDatabaseName();
             $dbnamecomment = $structure->getDatabaseComment();
             $structure->extractData($schemas);
