@@ -1,4 +1,7 @@
 # list of change
+## Version 1.2.0 - 2020-10-08
+New features:
+- adding the export of the vues
 
 ## Version 1.1.0 - 2020-04-29
 Bug fixes:
