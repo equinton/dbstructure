@@ -68,8 +68,10 @@ class Structure extends ObjetBDD
     }
     foreach ($this->_views as $view) {
       foreach ($this->_viewsCols as $colonne) {
-        if ($colonne["viewname"] == $table["viewname"] && $colonne["schemaname"] == $view["schemaname"]) {
-          $view["columns"][] = $colonne;
+        if (array_key_exists("viewname", $colonne) && array_key_exists("viewname", $table)) {
+          if ($colonne["viewname"] == $table["viewname"] && $colonne["schemaname"] == $view["schemaname"]) {
+            $view["columns"][] = $colonne;
+          }
         }
       }
       $this->views[] = $view;
@@ -232,7 +234,7 @@ class Structure extends ObjetBDD
       foreach ($schema["views"] as $view) {
         $val .= '<div id="' . $view["schemaname"] . $view["viewname"] . '" class="' . $classTableName . '">' . $view["schemaname"] . "." . $view["viewname"] . " (<i>view</i>)</div>"
           . '<br><div class="' . $classTableComment . '">'
-          . $view["definition"] . '</div>.<br>';
+          . str_replace(PHP_EOL, "<br>", $view["definition"]) . '</div><br>';
         $val .= '<table class="' . $classTableColumns . '">';
         $val .= '<thead><tr>
                   <th>Column name</th>
@@ -332,7 +334,7 @@ class Structure extends ObjetBDD
           $val .= "\\" . $level["object"] . "{"
             . $this->el($view["viewname"]) . "}"
             . PHP_EOL;
-          $val .= $this->el($view["definition"]) . PHP_EOL . PHP_EOL;
+          $val .= str_replace(array(PHP_EOL,"%"), array("\\\\".PHP_EOL,"\%"), $this->el($view["definition"])) . PHP_EOL . PHP_EOL;
           $val .= $headerTable . PHP_EOL;
           $val .= "\\hline" . PHP_EOL;
           $val .= "Column name & Type \\\\" . PHP_EOL
